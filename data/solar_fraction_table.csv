@@ -1,0 +1,10 @@
+category,appliance_type,grid_only,solar,solar_optimised,sso_grid_only,sso_solar,sso_solar_optimised,min_retail
+Water Heating,,0,0.5,0.9,0.2,0.35,0.5,0.1
+Water Heating,Electric resistance,0,0.4,0.7,0.15,0.28,0.5,0.1
+Space Heating,,0,0.15,0.3,0.05,0.1,0.15,0.1
+Space Cooling,,0,0.4,0.65,0.15,0.22,0.3,0.1
+Cooktop,,0,0.1,0.1,0.05,0.05,0.05,0.1
+Other Cooking,,0,0.25,0.25,0.05,0.08,0.1,0.1
+Other Electronics,,0,0.3333333333333333,0.3333333333333333,0.12,0.13,0.15,0.1
+Pool Equipment,,0,0.6,0.85,0.25,0.35,0.5,0.1
+Vehicles,,0,0.1,0.25,0.25,0.4,0.55,0.1

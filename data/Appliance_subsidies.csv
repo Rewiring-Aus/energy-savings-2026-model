@@ -1,0 +1,10 @@
+﻿State,Appliance,Subsidy value,Paid per,Eligibility
+VIC,Solar,1400,System,All
+VIC,Heat pump,1000,System,All
+VIC,Solar,2400,System,Apartment
+NSW,Solar,2400,System,Apartment
+ACT,Solar,2400,System,Apartment
+QLD,Solar,3500,System,Landlord
+NSW,Battery,50,kWh,VPP
+WA,Battery,130,kWh,"VPP, Synergy"
+WA,Battery,380,kWh,"VPP, Horizon"

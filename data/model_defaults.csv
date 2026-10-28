@@ -1,0 +1,58 @@
+parameter,value,type,group,applies_to,description
+state,AUS,character,Reference household,all functions,State used when none is given (AUS = population-weighted national)
+n_occupants,2.7,numeric,Reference household,all functions,Occupants; 2.7 is the Census average and the 1.00 point of the occupancy scaling
+dwelling_type,house,character,Reference household,all functions,house or apartment
+household_n_vehicles,state_average,number_or_keyword,Reference household,"evaluate_household, household()","Vehicles per household when none is given: a number, or state_average = that state's vehicles_per_household in state_average_values.csv (AUS 1.88, NSW 1.78, WA 2.05)"
+household_vehicle_class,SUV;hatch,character_vector,Reference household,evaluate_household,Fleet mix (semicolon-separated); n_vehicles is spread evenly across these classes
+appliance_n_vehicles,1,numeric,Reference household,"compare_*, evaluate_option, evaluate_solar_battery, helpers",Vehicles when none is given in the per-appliance functions. NB differs from household_n_vehicles
+appliance_vehicle_class,SUV,character_vector,Reference household,"compare_*, evaluate_option, evaluate_solar_battery, helpers",Vehicle class when none is given in the per-appliance functions. NB differs from household_vehicle_class
+new_used,New,character,Reference household,"evaluate_household, compare_vehicles",New or Used vehicle prices
+km_tier,middle,character,Reference household,all functions,Driving distance tier: low / middle / high (average_km_per_day_by_state.csv)
+tariff,tou,character,Tariff,all functions,Electrified household's retail plan: flat / tou / amber / solar_sharer
+fossil_baseline_tariff,flat,character,Tariff,evaluate_household,Plan the Gas / Gas + solar / LPG scenarios are billed on regardless of tariff. NA = use the household's tariff
+grid_only_tariff,flat,character,Tariff,evaluate_household,Plan the Electric (grid_only) scenario is billed on regardless of tariff. NA = use the household's tariff
+ev_tariff_share,1,numeric,Tariff,all functions,Share of EV demand billable at the EV rate (currently a no-op: EV rate = import rate on every plan)
+solar_sharer_cap_kwh_day,24,numeric,Tariff,get_tariff_spec,Household-wide daily cap on Solar Sharer free-window energy (kWh/day)
+use_loan,TRUE,logical,Finance,all functions,TRUE = capex financed by loan; FALSE = paid upfront. NB canonical runs pass TRUE
+loan_rate,0.06,numeric,Finance,all functions incl. annual_loan_payment,Annual loan interest rate
+loan_term,15,numeric,Finance,all functions incl. annual_loan_payment,Loan term (years)
+household_period,15year,character,Horizon,"evaluate_household, evaluate_option",Horizon when none is given: 1year or 15year
+appliance_period,1year,character,Horizon,"compare_*, solar_battery_rows",Horizon when none is given in the per-appliance comparisons. NB differs from household_period
+option_solar_scenario,solar_optimised,character,Horizon,evaluate_option,Solar scenario for a bare evaluate_option() call
+compare_solar_scenario,grid_only,character,Horizon,compare_*,Solar scenario for a bare compare_*() call
+standalone_solar_scenario,solar,character,Horizon,evaluate_solar_battery,Solar scenario for a bare evaluate_solar_battery() call
+apartment_energy_factor,0.79,numeric,Energy use,all functions,Apartment energy use relative to a house (ABS/AEMO: 21% less)
+fast_charge_fraction,0.15,numeric,Vehicles,all functions,Share of EV energy bought at public DC fast chargers
+fast_charge_dol_kwh_fallback,0.69,numeric,Vehicles,get_fast_charge_price,Fast-charge $/kWh used only if fuel_prices CSV has no ev_fast_charge row (the CSV has 0.65)
+house_solar_kwp,10,numeric,Solar and battery,"evaluate_household, compare_*",Default PV size for a house (kW)
+house_battery_kwh,15,numeric,Solar and battery,"evaluate_household, compare_*",Default battery size for a house (kWh)
+apartment_solar_kwp,2,numeric,Solar and battery,"evaluate_household, compare_*",Default PV size for an apartment (kW)
+apartment_battery_kwh,5,numeric,Solar and battery,"evaluate_household, compare_*",Default battery size for an apartment (kWh)
+standalone_solar_kwp,6.6,numeric,Solar and battery,evaluate_solar_battery,PV size for a bare evaluate_solar_battery() call. NB differs from house_solar_kwp
+standalone_battery_kwh,10,numeric,Solar and battery,evaluate_solar_battery,Battery size for a bare evaluate_solar_battery() call. NB differs from house_battery_kwh
+free_battery_kwh,0,numeric,Solar and battery,all functions,Extra zero-capex storage (V2G emulation)
+battery_round_trip_efficiency,0.9,numeric,Solar and battery,all functions,Battery round-trip efficiency (applied on charge)
+battery_useable_capacity_pct,0.9,numeric,Solar and battery,all functions incl. battery_model,Share of rated battery capacity that is usable
+battery_degradation_1yr,0.04,numeric,Solar and battery,all functions incl. battery_model,Annual degradation used for the 1-year horizon (first-year rate). Also the evaluate_solar_battery default whatever the horizon
+battery_degradation_15yr,0.022,numeric,Solar and battery,"evaluate_household, compare_*",Average annual degradation used for the 15-year horizon
+household_safeguard_pct,0,numeric,Solar and battery,all functions,Share of stored solar held back as a household reserve
+battery_min_grid_consumption_pct,0.1,numeric,Solar and battery,battery_model,Cap on reported self-sufficiency (reporting only; no $ effect)
+solar_seasonal_weight_spring,2,numeric,Solar and battery,battery_model,Relative solar generation in spring (weights are normalised to mean 1)
+solar_seasonal_weight_summer,3,numeric,Solar and battery,battery_model,Relative solar generation in summer
+solar_seasonal_weight_autumn,2,numeric,Solar and battery,battery_model,Relative solar generation in autumn
+solar_seasonal_weight_winter,1,numeric,Solar and battery,battery_model,Relative solar generation in winter
+inverter_replacement_year,12,numeric,Solar and battery,"evaluate_solar_battery, evaluate_household",Year the inverter is replaced (captured within a 15-year horizon)
+inverter_kw,5,numeric,Solar and battery,evaluate_solar_battery,Inverter size for systems below large_system_solar_kwp; caps evening export per hour
+large_system_inverter_kw,10,numeric,Solar and battery,evaluate_solar_battery,Inverter size for systems at or above large_system_solar_kwp
+large_system_solar_kwp,10,numeric,Solar and battery,evaluate_solar_battery,PV size at which the inverter steps up to large_system_inverter_kw
+microinverter_max_solar_kwp,5,numeric,Solar and battery,evaluate_solar_battery,Systems at or below this size use microinverters
+microinverter_cost_per_kw,300,numeric,Solar and battery,evaluate_solar_battery,Microinverter cost ($ per kW of array)
+microinverter_replacement_share,0.5,numeric,Solar and battery,evaluate_solar_battery,Share of microinverters replaced in the replacement year
+solar_lcoe_interest_rate,6%,character,Solar and battery,get_solar_lcoe,Which interest-rate row of solar_lcoe_by_state.csv to use (standalone evaluate_option LCOE pricing)
+default_fit_dol_kwh,0.02,numeric,Solar and battery,get_fit,Feed-in tariff used only if fuel_prices CSV has no solar_export row
+cooling_only_capex,2000,numeric,Capex,evaluate_household,Split AC for cooling in fossil-heated homes ($). Matches 'Reverse cycle AC ~3kW' in product prices
+switchboard_upgrade_capex,2500,numeric,Capex,evaluate_household,Switchboard upgrade charged to every all-electric scenario ($). Matches 'Switchboard / wiring upgrades' in product prices
+resistive_heaters_per_heating_unit,2,numeric,Capex,compare_space_heating,Resistive heaters bought per heating zone (they cover smaller areas)
+fossil_vehicle_type,Petrol,character,Scenario,evaluate_household,Fossil vehicle in the Gas / LPG scenarios: Petrol or Diesel
+lpg_cooktop_type,LPG,character,Scenario,evaluate_household,Cooktop in the LPG scenario
+electric_cooktop_type,induction,character,Scenario,evaluate_household,Cooktop in the Electric scenarios: induction or electric (resistive)

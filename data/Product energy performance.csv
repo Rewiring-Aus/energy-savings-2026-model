@@ -1,0 +1,32 @@
+Appliance,Fuel,Function,Efficiency,State
+Electric Resistive Heating / Bar heating,Electricity,Space heating,1,Australia
+AC,Electricity,Space heating,4,Australia
+AC,Electricity,Space heating,4,NSW
+AC,Electricity,Space heating,3.66,ACT
+AC,Electricity,Space heating,4.23,NT
+AC,Electricity,Space heating,4.11,QLD
+AC,Electricity,Space heating,4,SA
+AC,Electricity,Space heating,3.66,TAS
+AC,Electricity,Space heating,3.89,VIC
+AC,Electricity,Space heating,4,WA
+Gas - portable unflued,Gas,Space heating,0.85,Australia
+Gas central heating,Gas,Space heating,0.9,Australia
+LPG Heating,LPG,Space heating,0.8,Australia
+Wood fire,Wood,Space heating,0.65,Australia
+Electric Tank Resistive,Electricity,Hot water,0.94,Australia
+Electric Tank Heat Pump,Electricity,Hot water,3.48,Australia
+Natural Gas Instant,Gas,Hot water,0.8,Australia
+LPG Instant,LPG,Hot water,0.8,Australia
+Gas Tank,Gas,Hot water,0.7,Australia
+LPG Tank,LPG,Hot water,0.7,Australia
+Electric Tank Heat Pump,Electricity,Hot water,3.5,NSW
+Electric Tank Heat Pump,Electricity,Hot water,3.2,ACT
+Electric Tank Heat Pump,Electricity,Hot water,3.7,NT
+Electric Tank Heat Pump,Electricity,Hot water,3.6,QLD
+Electric Tank Heat Pump,Electricity,Hot water,3.5,SA
+Electric Tank Heat Pump,Electricity,Hot water,3.2,TAS
+Electric Tank Heat Pump,Electricity,Hot water,3.4,VIC
+Electric Tank Heat Pump,Electricity,Hot water,3.5,WA
+Induction cooktop,Electricity,Cooking,0.8,Australia
+Electric resistance cooktop,Electricity,Cooking,0.7,Australia
+Gas cooktop,Gas,Cooking,0.3,Australia

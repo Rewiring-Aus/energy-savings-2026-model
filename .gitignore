@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# R session files
+.Rhistory
+.RData
+.Rproj.user/
+Rplots.pdf
+
+# Model run outputs (regenerate with run_model.R)
+output/
