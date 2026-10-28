@@ -1,6 +1,6 @@
 # Energy Savings 2026 Model — Methodology (v1)
 
-*Draft, 14 October 2026. Supersedes `METHODOLOGY.md` (April 2026). Describes `energy_savings_model.R` and `battery_model.R` as they stand at 9 October 2026. The change log is in `MODEL_CHANGE_HISTORY.md`.*
+*Draft, updated 28 October 2026 (first drafted 14 October). Supersedes `METHODOLOGY.md` (April 2026). Describes `energy_savings_model.R` and `battery_model.R` as they stand at 28 October 2026; Appendix C lists what changed since the 14 October draft. The change log is in `MODEL_CHANGE_HISTORY.md`. Scripts named here that are not in the GitHub repository (`Rewiring-Aus/energy-savings-2026-model`) are on the Rewiring Australia shared drive.*
 
 ---
 
@@ -14,7 +14,7 @@ These design choices run through every section below.
 2. **Use measured, average energy use.** Energy use comes from survey and baseline-study data on what Australian households actually consume. It is not built up from rated efficiencies. Appliance efficiency is therefore already reflected in the inputs, and applying COPs or star ratings on top would count it twice (§3.1).
 3. **Be conservative about the electric option.** Where an assumption is uncertain, the model leans toward understating savings. Examples: fossil homes stay on a flat tariff (§6.3); a grid-only electric home is not given off-peak pricing it couldn't realistically achieve (§6.3); 15% of EV charging is priced at public fast-charger rates (§3.4); every electrified home pays for a switchboard upgrade (§7.1); and a minimum share of every load is always bought from the grid (§8.4).
 4. **Every kWh is accounted for once.** Solar, the Solar Sharer free window, the battery and the grid all compete to supply the same load. The model allocates each kWh to exactly one source, in a fixed order, and values any credit at the same rate that the kWh was billed at. Most of the bugs fixed in 2026 broke this rule (see `MODEL_CHANGE_HISTORY.md`, "Themes").
-5. **Keep a single source of truth.** Tariffs are resolved in one function (`get_tariff_spec()`). Household loads are computed in one function (`compute_household_loads()`). Prices come from versioned CSVs, not literals in the code. The interactive visualiser is a port of this model and is checked against it by an automated regression test (§12).
+5. **Keep a single source of truth.** Tariffs are resolved in one function (`get_tariff_spec()`). Household loads are computed in one function (`compute_household_loads()`). Prices come from versioned CSVs, and every other default and modelling constant comes from `model_defaults.csv` (§2.6), not literals in the code. The interactive visualiser is a port of this model and is checked against it by an automated regression test (§12).
 
 ---
 
@@ -80,22 +80,31 @@ For each option or scenario the model reports energy use (kWh/day, split into so
 
 ### 2.5 Reference household
 
-The standard runs in `energy_savings_comparisons.R` use the following reference household:
+The model's defaults, and the standard runs in `energy_savings_comparisons.R`, use the following reference household:
 
 | Parameter | Value | Basis |
 |---|---|---|
 | State | AUS (population-weighted national average) | `state_population_weights.csv` |
 | Occupants | 2.7 | 2021 Census average household size |
 | Dwelling | Detached house | — |
-| Vehicles | 1.88, split evenly between an SUV and a hatchback | National average vehicles per household (`state_average_values.csv`) |
+| Vehicles | The state average (AUS 1.88, from 1.66 in the ACT to 2.05 in WA), split evenly between an SUV and a hatchback | Vehicles per household by state (`state_average_values.csv`) |
 | New EV models | BYD Sealion (SUV), BYD Dolphin (hatch), BYD Seal (sedan) | §7.2 |
 | Driving distance | 36.4 km/day per vehicle (middle tier) | §3.4 |
 | Solar / battery | 10 kW PV + 15 kWh battery (house); 2 kW + 5 kWh (apartment) | `DEFAULT_SYSTEM_SIZE` |
 | Tariff | Time-of-use (`tou`) | §6 |
+| Horizon | 15 years | §2.4 |
 | Finance | Loan at 6% over 15 years | §9 |
 
 > [!NOTE]
-> `evaluate_household()` defaults to `n_vehicles = 1.8` when no count is given. The canonical runs pass the state average explicitly (1.88 for AUS), as does the visualiser.
+> When no vehicle count is given, the model uses the state's average vehicles per household (`household_n_vehicles = state_average` in `model_defaults.csv`), as the visualiser does. A number can be given instead.
+
+### 2.6 Describing a household and setting defaults
+
+A run is described once with `household()`, which records the state, occupants, dwelling, vehicles, tariff, horizon, finance and solar/battery system, and checks each value (an unknown state or misspelt tariff fails straight away). Anything not given is taken from `model_defaults.csv`. Derived values are resolved in one place: system size from the dwelling type (§8.6), battery degradation from the horizon (§8.7) and the number of years. `update(hh, ...)` returns a copy with some settings changed, for example `update(hh, state = "VIC")`. Every public function accepts the household object; the repository README lists every setting.
+
+`model_defaults.csv` holds every default and modelling constant that is not a market price: the reference household, tariff rules (§6.3), finance (§9.2), battery and inverter parameters (§8.6–8.7), the apartment energy factor (§3.3), the fast-charging share (§3.4), switchboard and cooling-only capex (§7.1), and the interest rate for standalone solar LCOE pricing (§8.5). Each row has a description. Changing a value there changes it for every run. The per-load solar, free-window and `min_retail` shares (§8.2) are in their own file, `solar_fraction_table.csv`.
+
+Model functions return full-precision values. Rounding (whole dollars, kWh and t CO₂e to 2 decimal places, $/kWh to 4) is applied only to output tables, so rounded figures never feed later calculations.
 
 ---
 
@@ -129,7 +138,7 @@ Values in between are linearly interpolated. Vehicle energy isn't scaled by occu
 
 ### 3.3 Dwelling type
 
-Apartments use about 21% less energy than detached houses (ABS/AEMO). For apartments, all appliance energy is multiplied by `APARTMENT_ENERGY_FACTOR = 0.79`. Vehicle energy is unaffected. Apartments also get a smaller default solar and battery system (§8.6) and may be eligible for apartment-specific solar subsidies (§7.3).
+Apartments use about 21% less energy than detached houses (ABS/AEMO). For apartments, all appliance energy is multiplied by 0.79 (`apartment_energy_factor` in `model_defaults.csv`). Vehicle energy is unaffected. Apartments also get a smaller default solar and battery system (§8.6) and may be eligible for apartment-specific solar subsidies (§7.3).
 
 ### 3.4 Vehicles
 
@@ -153,7 +162,7 @@ EV efficiency is the average of manufacturer figures across models in each class
 
 **Fleet composition.** `vehicle_class` sets the mix and `n_vehicles` sets the size. The count is spread evenly across the classes listed, so 1.88 vehicles over an SUV and a hatchback means 0.94 of each. Energy, maintenance and capex are all linear in this weight.
 
-**EV charging mix.** 15% of EV energy (`FAST_CHARGE_FRACTION`) is assumed to come from public DC fast chargers (road trips, top-ups, households without off-street parking), priced at $0.65/kWh (Econnex 2025). Fast-charged kWh get no solar or free-window benefit and don't count toward the home supply-charge allocation. The other 85% is charged at home and priced on the household's tariff (§6).
+**EV charging mix.** 15% of EV energy (`fast_charge_fraction`) is assumed to come from public DC fast chargers (road trips, top-ups, households without off-street parking), priced at $0.65/kWh (Econnex 2025). Fast-charged kWh get no solar or free-window benefit and don't count toward the home supply-charge allocation. The other 85% is charged at home and priced on the household's tariff (§6).
 
 ---
 
@@ -256,11 +265,11 @@ The requested tariff is applied only where the household could realistically use
 
 | Scenario | Tariff applied | Why |
 |---|---|---|
-| Gas, Gas + solar, LPG | **Always `flat`** (`FOSSIL_BASELINE_TARIFF`) | A gas home's remaining electric load is baseload plus evening cooling, which is hardly shiftable, so it would rationally stay on a flat plan. Leaving it on TOU flattered the baseline by about $325/yr. |
-| Electric (grid only) | **Always `flat`** (`GRID_ONLY_TARIFF`) | Without a battery, the home can't move its whole load off peak. Billing it all at off-peak made solar + battery look worth about $0/yr. |
+| Gas, Gas + solar, LPG | **Always `flat`** (`fossil_baseline_tariff`) | A gas home's remaining electric load is baseload plus evening cooling, which is hardly shiftable, so it would rationally stay on a flat plan. Leaving it on TOU flattered the baseline by about $325/yr. |
+| Electric (grid only) | **Always `flat`** (`grid_only_tariff`) | Without a battery, the home can't move its whole load off peak. Billing it all at off-peak made solar + battery look worth about $0/yr. |
 | Electric (solar), Electric (solar optimised) | The requested tariff | Solar, the battery and timers make load shifting achievable. |
 
-These overrides apply in `evaluate_household()`. The per-appliance `compare_*()` functions bill every row at the requested tariff.
+These overrides apply in `evaluate_household()` and are set in `model_defaults.csv`. The per-appliance `compare_*()` functions bill every row at the requested tariff.
 
 ---
 
@@ -340,7 +349,7 @@ Each household is assigned one solar scenario. It sets the share of each load th
 | `solar` | Rooftop PV, no deliberate load shifting |
 | `solar_optimised` | Rooftop PV plus active load shifting (hot-water timers, daytime heat-pump pre-heating, daytime EV charging) |
 
-### 8.2 Per-load fractions (`SOLAR_FRACTION_TABLE`)
+### 8.2 Per-load fractions (`solar_fraction_table.csv`)
 
 | Load | Solar: `solar` | Solar: `solar_optimised` | Free window: grid only | Free window: solar | Free window: optimised | `min_retail` floor |
 |---|---|---|---|---|---|---|
@@ -366,7 +375,7 @@ Daily PV generation is calculated as:
 
 $$S = \text{capacity factor}_{\text{state}} \times 24 \times \text{kWp}$$
 
-Capacity factors come from `solar_lcoe_by_state.csv`: AUS 0.183, ranging from TAS 0.144 to the NT 0.241. A 10 kW system in the AUS case generates about 43.9 kWh/day.
+Capacity factors come from `solar_lcoe_by_state.csv` (the same at every finance rate): AUS 0.183, ranging from TAS 0.144 to the NT 0.241. A 10 kW system in the AUS case generates about 43.9 kWh/day.
 
 If the loads' combined demand for solar (load × solar fraction) exceeds daily generation, every load's solar share is scaled back pro rata (`solar_scale_factor`). This mostly matters for small apartment systems.
 
@@ -390,7 +399,7 @@ The household-level free-window, solar and battery allocations are each calculat
 
 **Whole-household view.** Self-consumed solar kWh cost $0 at the appliance level. The PV system's capex is added once at the household level (§8.6). Exports earn the FiT. There is no "forgone FiT" charge on self-consumed kWh, because the export flow only applies to kWh that are actually exported. Supply charges are unaffected by solar: they depend on being connected, not on how much is drawn.
 
-**Standalone appliance calls.** When `evaluate_option()` is called on its own with solar (`solar_marginal_cost = TRUE`), self-consumed kWh are charged at the state's solar LCOE (8% finance rate). This spreads the panel cost over the kWh, because a single-appliance comparison has no other place to put it. Neither `evaluate_household()` nor the `compare_*()` context rows use this mode.
+**Standalone appliance calls.** When `evaluate_option()` is called on its own with solar (`solar_marginal_cost = TRUE`), self-consumed kWh are charged at the state's solar LCOE, at a 6% finance rate (`solar_lcoe_interest_rate`; the LCOE table also has 0%, 5.5%, 7% and 8% rows). This spreads the panel cost over the kWh, because a single-appliance comparison has no other place to put it. Neither `evaluate_household()` nor the `compare_*()` context rows use this mode.
 
 **Value of the solar system** (`compare_*()` "solar" row) is the household's actual avoided grid cost. It is calculated as the household's energy cost on grid only minus its energy cost with solar, at the tariff's import rates (not flat retail), plus FiT export income.
 
@@ -451,7 +460,7 @@ The last term is the linear average of start-of-life and end-of-horizon capacity
 
 ### 9.2 Financing
 
-When `use_loan = TRUE`, capex (appliances, switchboard, PV, battery) is replaced by repayments on a standard amortising loan:
+By default (`use_loan = TRUE`), capex (appliances, switchboard, PV, battery) is replaced by repayments on a standard amortising loan:
 
 $$\text{annual repayment} = 12 \times P\,\frac{r}{1-(1+r)^{-n}}, \quad r = \frac{\text{rate}}{12},\ n = 12 \times \text{term}$$
 
@@ -508,6 +517,7 @@ The summary also reports `annual_solar_self_value`, which is self-consumed kWh �
 2. **`ev_tariff_share` is currently a no-op.** `get_tariff_spec()` sets the EV rate equal to the appliance import rate under every tariff. A dedicated EV tariff row is needed for this parameter to have any effect.
 3. **State-level ICE calibration isn't used.** `ice_fleet_consumption_calibration.R` writes `ice_consumption_by_state.csv`, but the model reads only the national ICE Wh/km. Either wire it in or describe ICE efficiency as national only (as above).
 4. **`min_retail` interpretation.** If the floor means "the stored energy isn't there at 4 am", it should arguably reduce the battery's dispatchable pool rather than reroute that energy to the EV (about $190/yr difference).
+5. **No used ICE vehicle prices.** `vehicle_costs_2026.csv` has used EV prices but no used petrol or diesel rows, so a used-vehicle comparison prices the fossil car at $0. Only the default (new) comparison is valid until these are added.
 
 ---
 
@@ -515,7 +525,8 @@ The summary also reports `annual_solar_self_value`, which is self-consumed kWh �
 
 | Check | What it does |
 |---|---|
-| `validate_compare_vs_household.R` | Rebuilds the whole-household total from per-appliance and system rows across 256 combinations (7 states × 3 occupancies × 2 horizons × loan on/off × 3 tariffs) and compares it with `evaluate_household()`. Maximum divergence on 15-year total cost: $7.90, which is rounding. |
+| `validate_compare_vs_household.R` | Rebuilds the whole-household total from per-appliance and system rows across 256 combinations (7 states × 3 occupancies × 2 horizons × loan on/off × 3 tariffs, plus 4 size and class variants) and compares total cost, annual opex and savings vs Gas with `evaluate_household()`. Must agree within $1; the two paths agree to floating-point precision. |
+| `test_household_object.R` | Checks that a `household()` object gives exactly the same results as the same settings passed as arguments, for every public function, and that invalid settings are rejected. |
 | `energy_savings_tests.R` | Unit-level checks on the model functions. |
 | Visualiser parity (`npm run regression`) | Runs the R model and the TypeScript port over 14 scenarios × 11 output columns. Fails on any cell differing by more than $20 over the horizon. |
 | Energy-balance invariants | The battery's three outputs split the usable stored pool exactly (checked to 3.6 × 10⁻¹⁵). Credited kWh equal billed kWh. |
@@ -524,7 +535,7 @@ The summary also reports `annual_solar_self_value`, which is self-consumed kWh �
 
 ## Appendix A — Input files
 
-All in `Research/Data/Clean data - for internal use/Energy savings report data/Model input data/`.
+All in `Research/Data/Clean data - for internal use/Energy savings report data/Model input data/` on the shared drive, and in `data/` in the GitHub repository.
 
 | File | Used for | Built by |
 |---|---|---|
@@ -537,13 +548,15 @@ All in `Research/Data/Clean data - for internal use/Energy savings report data/M
 | `Energy Savings 2026 - input data - FINAL product prices.csv` | Appliance, battery and installation capex | Product price research |
 | `Appliance_subsidies.csv` | State subsidies | Program websites |
 | `Heater_numbers_by_state.csv` | Heater count per home (capex) | — |
-| `vehicle_costs_2026.csv` | Vehicle prices | `Vehicle costs.R` |
+| `vehicle_costs_2026.csv` | Vehicle prices | `vehicle_prices_sep2026_update.R` |
 | `vehicle_average_efficiency_by_class.csv` | EV and ICE Wh/km | `ice_fleet_consumption_calibration.R` |
 | `average_km_per_day_by_state.csv` | Driving distance tiers | ABS SMVU |
 | `Vehicle_maintenance.csv` | Annual vehicle maintenance | — |
 | `emissions_factors_by_state.csv` | Emissions factors | National Greenhouse Accounts |
 | `state_population_weights.csv` | AUS averages | ABS |
-| `state_average_values.csv` | Vehicles per household by state | ABS |
+| `state_average_values.csv` | Vehicles per household by state (default vehicle count) | `state_average_values.R` (ABS) |
+| `model_defaults.csv` | Defaults and modelling constants (§2.6) | Set by hand |
+| `solar_fraction_table.csv` | Per-load solar, free-window and `min_retail` shares (§8.2) | Set by hand |
 | `WA_postcode_network.csv` *(optional)* | WA battery subsidy network | — |
 
 ## Appendix B — Main changes from the April 2026 draft
@@ -559,3 +572,13 @@ All in `Research/Data/Clean data - for internal use/Energy savings report data/M
 - Corrected the emissions factors to match the input CSV: gas 0.219 (was 0.19), petrol 0.305 (was 0.24), diesel 0.316 (was 0.25), LPG 0.291 (was 0.22), wood 0.004 (was 0.40).
 - Added vehicle maintenance, BYD reference models, fast-charging share, switchboard upgrade, cooling-only AC for fossil homes, heaters per home and state subsidies.
 - Price forecasts are now described as real-terms, matching the code, with the inconsistency flagged (§5.2).
+
+## Appendix C — Changes since the 14 October draft
+
+- Defaults and modelling constants moved out of the code into `model_defaults.csv`, and the per-load fractions into `solar_fraction_table.csv` (§2.6). No numbers changed.
+- Runs are described with a validated `household()` settings object (§2.6).
+- When no vehicle count is given, the model uses the state's average vehicles per household rather than a flat 1.8 (§2.5).
+- Loans are on by default (`use_loan = TRUE`), matching the standard runs (§9.2).
+- Standalone solar LCOE pricing uses a 6% finance rate rather than 8%, matching the loan rate (§8.5).
+- Rounding is applied only to output tables. Previously some rounded values fed later calculations, which moved results by at most $2/yr (§2.6).
+- The validation check now passes within $1 rather than $10 (§12).
