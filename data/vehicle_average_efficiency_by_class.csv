@@ -1,0 +1,4 @@
+vehicle_class,avg_energy_consumption_wh_per_km,count,ice_avg_energy_consumption_wh_per_km,ice_count
+hatchback/micro car,161.8,78,831.6,16
+sedan,173.9,116,1036.8,12
+SUV,190.8,306,1019.2,28

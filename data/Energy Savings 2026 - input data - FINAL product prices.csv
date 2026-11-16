@@ -1,0 +1,37 @@
+Technology,Fuel,Function,Region,Total installed,Notes
+Solar PV cost per kW,NA,Solar battery,AUS,690,
+Solar PV cost per kW,NA,Solar battery,ACT,533,
+Solar PV cost per kW,NA,Solar battery,NSW,649,
+Solar PV cost per kW,NA,Solar battery,NT,1490,
+Solar PV cost per kW,NA,Solar battery,QLD,689,
+Solar PV cost per kW,NA,Solar battery,SA,701,
+Solar PV cost per kW,NA,Solar battery,TAS,921,
+Solar PV cost per kW,NA,Solar battery,VIC,679,
+Solar PV cost per kW,NA,Solar battery,WA,750,
+Subsidised home battery cost per kW,NA,Solar battery,AUS,620,
+Unsubsidised home battery cost per kW,NA,Solar battery,AUS,940,
+Inverter cost,NA,Solar battery,AUS,"1,800",
+Battery installation,NA,Solar battery,AUS,"2,300",
+VPP annual benefit,NA,Solar battery,AUS,400,
+,,,,,
+Reverse cycle AC ~7kW,Electric,Space heating / cooling,AUS,"3,200",
+Reverse cycle AC ~3kW,Electric,Space heating / cooling,AUS,"2,000",
+Resistive Heaters,Electric,Space heating / cooling,AUS,220,
+Gas Heaters ~7kW,Gas,Space heating / cooling,AUS,"1,500",
+LPG Heaters,LPG,Space heating / cooling,AUS,"1,500",
+Wood Fires,Wood,Space heating / cooling,AUS,"2,400",
+,,,,,
+Water Heater Heat Pumps,Electric,Water heating,AUS,"3,900",
+Water Heater Electric Storage Med/Large,Electric,Water heating,AUS,"2,600",
+Water Heater Electric Storage Small,Electric,Water heating,AUS,"2,100",Online median + 200 to account for low-ball online pricing
+Water Heater NGas Instant or LPG Instant,Gas,Water heating,AUS,"1,900",Online median + 200 to account for low-ball online pricing
+Water Heater NGas Ior LPG Storage,Gas,Water heating,AUS,"2,600",Online median + 200 to account for low-ball online pricing
+,,,,,
+Induction Cooktops,Electric,Cooktops,AUS,"2,200",4 burner
+Electric Cooktops,Electric,Cooktops,AUS,"1,000",4 burner
+Gas Cooktops,Gas,Cooktops,AUS,"1,200",4 burner
+,,,,,
+EV Level 2 Charger,Electric,Vehicle,AUS,"2,000",
+,,,,,
+Switchboard / wiring upgrades,Electric,Infrastructure,AUS,"2,500",Note this is included in every home even though not always needed.
+Gas disconnection,Gas,Infrastructure,AUS,150,

@@ -1,0 +1,28 @@
+Category,Appliance Type,Unit,AUS,NSW,ACT,NT,QLD,SA,TAS,VIC,WA
+Space Heating,Electric heat pump,kWh/day,3.3,2.273,8.531,0.263,1.253,2.745,7.362,6.007,1.969
+Space Heating,Electric resistance,kWh/day,12.8,9.09,31.20,1.11,5.16,10.98,26.92,23.34,7.87
+Space Heating,Natural gas,kWh/day,16.0,11.36,39.00,1.39,6.44,13.72,33.65,29.18,9.84
+Space Heating,LPG,kWh/day,16.0,11.36,39.00,1.39,6.44,13.72,33.65,29.18,9.84
+Space Heating,Wood,kWh/day,19.7,13.99,48.00,1.71,7.93,16.89,41.42,35.91,12.12
+Space Cooling,Heat pump,kWh/day,0.94,0.77,0.74,7.58,1.89,0.63,0.09,0.10,1.65
+Water Heating,Electric heat pump,kWh/day,1.83,1.76,2.00,1.27,1.64,1.81,1.90,2.05,1.84
+Water Heating,Electric resistance,kWh/day,6.75,6.54,6.80,4.99,6.28,6.75,6.46,7.41,6.84
+Water Heating,Natural gas,kWh/day,7.93,7.69,7.99,5.86,7.38,7.93,7.59,8.70,8.04
+Water Heating,LPG,kWh/day,7.93,7.69,7.99,5.86,7.38,7.93,7.59,8.70,8.04
+Cooktop,Electric resistance,kWh/day,0.94,0.95,0.88,0.99,0.93,1.00,1.00,0.92,0.97
+Cooktop,Electric induction,kWh/day,0.85,0.86,0.80,0.90,0.84,0.91,0.91,0.83,0.87
+Cooktop,Natural gas,kWh/day,2.20,2.21,2.07,2.32,2.17,2.35,2.34,2.14,2.26
+Cooktop,LPG,kWh/day,2.20,2.21,2.07,2.32,2.17,2.35,2.34,2.14,2.26
+Other Cooking,Refrigeration,kWh/day,2.06,2.07,1.93,2.17,2.03,2.21,2.22,2.01,2.10
+Other Cooking,Dishwashers,kWh/day,0.30,0.30,0.28,0.31,0.30,0.32,0.32,0.29,0.31
+Other Cooking,Microwave,kWh/day,0.30,0.30,0.29,0.32,0.30,0.32,0.32,0.30,0.31
+Other Cooking,Ovens,kWh/day,0.34,0.34,0.33,0.36,0.34,0.36,0.37,0.34,0.35
+Other Cooking,Uprights,kWh/day,0.39,0.39,0.37,0.41,0.38,0.41,0.42,0.38,0.40
+Other Electronics,Washers and dryers,kWh/day,0.44,0.44,0.42,0.46,0.44,0.46,0.47,0.44,0.45
+Other Electronics,Lighting,kWh/day,0.91,0.91,0.87,0.95,0.90,0.96,0.96,0.90,0.93
+Other Electronics,Other appliances,kWh/day,3.86,3.97,3.89,4.11,3.75,3.79,3.78,3.87,3.76
+Pool Equipment,Electric,kWh/day,0.67,0.74,0.24,1.75,1.00,0.49,0.25,0.35,0.87
+Pool Equipment,Natural gas,kWh/day,0.25,0.27,0.09,0.65,0.37,0.18,0.09,0.13,0.33
+Vehicles,Petrol,kWh/day,36,36.7,33.5,38.6,37.2,33.2,33.6,35.9,35.8
+Vehicles,Diesel,kWh/day,28,29,26,30,29,26,26,28,28
+Vehicles,Electric,kWh/day,9.3,9.4,8.6,9.9,9.6,8.5,8.6,9.2,9.2
