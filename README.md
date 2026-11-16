@@ -46,9 +46,10 @@ The script prints each result and writes CSVs to `output/`:
 | `apartment_annual_cost.csv` | Figure 7: annual cost of an apartment |
 | `vehicle_savings.csv` | Figures 15 to 17: new EV vs new petrol car by class |
 
-Two results differ slightly from the published figures. The state savings are within $2, because
-the report used unrounded state occupancy. The apartment saving comes out at $1,805 a year against
-the published $1,844.
+The results match the published figures, with two small differences in the unrounded numbers. The
+state savings are within $2, because the report used unrounded state occupancy. The apartment
+saving comes out at $1,805 a year, matching the $1,800 shown in the report; the data table in the
+markdown version of the report gives the unrounded value as $1,844.
 
 To use the model in your own script, source it with the repository folder as the working
 directory. It reads its inputs from `data/`:
